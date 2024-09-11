@@ -5,9 +5,20 @@ import {
 } from "react-router-dom";
 import "./App.css";
 import { Navigation } from "./components/Navigation/Navigation";
-import { loginAction, protectedLoader } from "./route-utils";
+import { loginAction, protectedLoader, signupAction } from "./route-utils";
 import { Login } from "./components/Auth/LoginPage";
 import { HomePage } from "./components/Home/HomePage";
+import { SignupPage } from "./components/Auth/SignupPage";
+
+const NotFoundPage = () => (
+  <div className="text-center">
+    <h1 className="text-3xl font-bold">404 - Page Not Found</h1>
+    <p className="mb-4">The page you are looking for does not exist.</p>
+    <a href="/home" className="text-blue-500 hover:underline">
+      Go back to Home
+    </a>
+  </div>
+);
 
 const router = createBrowserRouter([
   {
@@ -30,6 +41,17 @@ const router = createBrowserRouter([
         Component: Login,
       },
       {
+        path: "signup",
+        action: signupAction,
+        loader: () => {
+          if (localStorage.getItem("token")) {
+            return redirect("home");
+          }
+          return null;
+        },
+        Component: SignupPage,
+      },
+      {
         path: "home",
         loader: protectedLoader,
         Component: HomePage,
@@ -38,9 +60,16 @@ const router = createBrowserRouter([
   },
   {
     path: "/logout",
-    async action() {
+    async loader() {
+      localStorage.removeItem("name");
+      localStorage.removeItem("token");
       return redirect("/");
     },
+  },
+  // Catch-all route for unsupported paths (404 page)
+  {
+    path: "*",
+    Component: NotFoundPage,
   },
 ]);
 
