@@ -5,11 +5,13 @@ import { z } from "zod";
 import "../api/mock";
 import api from "../api";
 
+// Schema to validate login form input
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"), // Validate email format
   password: z.string().min(6, "Password must be at least 6 characters long"), // Ensure password has a minimum length
 });
 
+// Schema to validate signup form input
 const signupSchema = z
   .object({
     email: z.string().email("Invalid email address"), // Email must be a valid email
@@ -29,12 +31,14 @@ const signupSchema = z
     path: ["confirmPassword"], // This applies to confirmPassword field
   });
 
+// Custom error class for handling password-related errors
 class PasswordError extends Error {
   constructor(message?: string) {
     super(message);
   }
 }
 
+// Login action to handle form submission, validation, and API call
 export async function loginAction({ request }: LoaderFunctionArgs) {
   const formData = await request.formData();
   const creds = {
@@ -42,12 +46,15 @@ export async function loginAction({ request }: LoaderFunctionArgs) {
     password: formData.get("password"),
   };
 
-  // Sign in and redirect to the home if successful.
+  // Attempt to log in and redirect to home if successful
   try {
+    // Validate login form data using loginSchema
     loginSchema.parse(creds);
     const response = await api.post<{
       user: { password: string; firstName: string; email: string };
     }>("/login", creds);
+
+    // Check if the provided credentials match those stored in localStorage
     if (
       response.data.user.password === localStorage.getItem("password") &&
       response.data.user.email === localStorage.getItem("email")
@@ -120,6 +127,7 @@ export async function signupAction({ request }: LoaderFunctionArgs) {
   }
 }
 
+// Loader to protect routes by requiring authentication via token
 export function protectedLoader({ request }: LoaderFunctionArgs) {
   if (!localStorage.getItem("token")) {
     const params = new URLSearchParams();
