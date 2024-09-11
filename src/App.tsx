@@ -9,6 +9,9 @@ import { loginAction, protectedLoader, signupAction } from "./route-utils";
 import { Login } from "./components/Auth/LoginPage";
 import { HomePage } from "./components/Home/HomePage";
 import { SignupPage } from "./components/Auth/SignupPage";
+import { UploadPage } from "./components/Upload/UploadPage";
+import { FileDetailsPage } from "./components/Details/FileDetailsPage";
+import { RecordsProvider } from "./contexts/RecordContext";
 
 const NotFoundPage = () => (
   <div className="text-center">
@@ -56,25 +59,39 @@ const router = createBrowserRouter([
         loader: protectedLoader,
         Component: HomePage,
       },
+      {
+        path: "upload",
+        loader: protectedLoader,
+        Component: UploadPage,
+      },
+      {
+        path: "records",
+        loader: protectedLoader,
+        Component: FileDetailsPage,
+      },
+      {
+        path: "logout",
+        async loader() {
+          localStorage.removeItem("name");
+          localStorage.removeItem("token");
+          return redirect("/");
+        },
+      },
+      // Catch-all route for unsupported paths (404 page)
+      {
+        path: "*",
+        Component: NotFoundPage,
+      },
     ],
-  },
-  {
-    path: "/logout",
-    async loader() {
-      localStorage.removeItem("name");
-      localStorage.removeItem("token");
-      return redirect("/");
-    },
-  },
-  // Catch-all route for unsupported paths (404 page)
-  {
-    path: "*",
-    Component: NotFoundPage,
   },
 ]);
 
 function App() {
-  return <RouterProvider router={router} fallbackElement={<p>Loading...</p>} />;
+  return (
+    <RecordsProvider>
+      <RouterProvider router={router} fallbackElement={<p>Loading...</p>} />
+    </RecordsProvider>
+  );
 }
 
 export default App;
