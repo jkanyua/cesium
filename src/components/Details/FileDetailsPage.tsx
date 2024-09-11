@@ -1,53 +1,166 @@
+import { useState } from "react";
+import { SortField } from "../../contexts/RecordContext";
 import { useRecords } from "../../hooks/useRecords";
+import {
+  ArrowUpDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
 
 export const FileDetailsPage = (): JSX.Element => {
-  const { records } = useRecords();
+  const {
+    records,
+    sortRecords,
+    currentPage,
+    setCurrentPage,
+    recordsPerPage,
+    setRecordsPerPage,
+    totalPages,
+  } = useRecords();
+
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
+  const handleSort = (field: SortField) => {
+    const newOrder = sortOrder === "asc" ? "desc" : "asc";
+    setSortOrder(newOrder);
+    sortRecords(field, newOrder);
+  };
 
   return (
-    <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-      <h2 className="text-2xl font-bold mb-4">File Records</h2>
-      <p className="mb-4">View details of uploaded CSV records</p>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-              <th scope="col" className="px-6 py-3">
-                File name
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Start date
-              </th>
-              <th scope="col" className="px-6 py-3">
-                End date
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Upload date
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Date Type
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {records.map((record) => {
-              return (
-                <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                  <th
-                    scope="row"
-                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-6">Uploaded File Records</h1>
+      {records.length === 0 ? (
+        <p>No records found.</p>
+      ) : (
+        <>
+          <div className="mb-4">
+            <label htmlFor="recordsPerPage" className="mr-2">
+              Records per page:
+            </label>
+            <select
+              id="recordsPerPage"
+              value={recordsPerPage}
+              onChange={(e) => setRecordsPerPage(Number(e.target.value))}
+              className="border rounded px-2 py-1"
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+            </select>
+          </div>
+          <table className="min-w-full bg-white border border-gray-300">
+            <thead>
+              <tr>
+                <th className="py-2 px-4 border-b">
+                  File Name
+                  <button
+                    onClick={() => handleSort("fileName")}
+                    className="ml-2"
                   >
-                    {record.fileName}
-                  </th>
-                  <td className="px-6 py-4">{record.startDate}</td>
-                  <td className="px-6 py-4">{record.endDate}</td>
-                  <td className="px-6 py-4">{record.uploadDate}</td>
-                  <td className="px-6 py-4">{record.dateType}</td>
+                    <ArrowUpDown size={16} />
+                  </button>
+                </th>
+                <th className="py-2 px-4 border-b">
+                  Upload Date
+                  <button
+                    onClick={() => handleSort("uploadDate")}
+                    className="ml-2"
+                  >
+                    <ArrowUpDown size={16} />
+                  </button>
+                </th>
+                <th className="py-2 px-4 border-b">
+                  Start Date
+                  <button
+                    onClick={() => handleSort("startDate")}
+                    className="ml-2"
+                  >
+                    <ArrowUpDown size={16} />
+                  </button>
+                </th>
+                <th className="py-2 px-4 border-b">
+                  End Date
+                  <button
+                    onClick={() => handleSort("endDate")}
+                    className="ml-2"
+                  >
+                    <ArrowUpDown size={16} />
+                  </button>
+                </th>
+                <th className="py-2 px-4 border-b">
+                  Date Type
+                  <button
+                    onClick={() => handleSort("dateType")}
+                    className="ml-2"
+                  >
+                    <ArrowUpDown size={16} />
+                  </button>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {records.map((record, index) => (
+                <tr
+                  key={index}
+                  className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                >
+                  <td className="py-2 px-4 border-b">{record.fileName}</td>
+                  <td className="py-2 px-4 border-b">
+                    {new Date(record.uploadDate).toLocaleString()}
+                  </td>
+                  <td className="py-2 px-4 border-b">{record.startDate}</td>
+                  <td className="py-2 px-4 border-b">{record.endDate}</td>
+                  <td className="py-2 px-4 border-b">{record.dateType}</td>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+              ))}
+            </tbody>
+          </table>
+          <div className="mt-4 flex justify-between items-center">
+            <div>
+              Showing {(currentPage - 1) * recordsPerPage + 1} to{" "}
+              {Math.min(currentPage * recordsPerPage, records.length)} of{" "}
+              {records.length} entries
+            </div>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+                className="px-2 py-1 border rounded"
+              >
+                <ChevronsLeft size={16} />
+              </button>
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-2 py-1 border rounded"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <span className="px-2 py-1">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                className="px-2 py-1 border rounded"
+              >
+                <ChevronRight size={16} />
+              </button>
+              <button
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages}
+                className="px-2 py-1 border rounded"
+              >
+                <ChevronsRight size={16} />
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

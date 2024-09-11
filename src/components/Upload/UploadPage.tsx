@@ -211,6 +211,10 @@ export const UploadPage: React.FC = () => {
             })
           }
         >
+          {
+            // Comment: Not sure what meant by "Date Type (dropdown)"
+            // adding date format values for now
+          }
           <option value="yyyy-mm-dd" selected>
             yyyy-mm-dd
           </option>
