@@ -20,7 +20,7 @@ mock.onPost("/login").reply((config) => {
         id: crypto.randomUUID(),
         firstName: extractNameFromEmail(requestData.email),
         email: requestData.email,
-        token: crypto.randomUUID(),
+        password: requestData.password,
       },
     },
   ];
@@ -34,8 +34,6 @@ mock.onPost("/signup").reply((config) => {
       user: {
         id: crypto.randomUUID(),
         ...requestData,
-        password: "redacted",
-        confirmPassword: "redacted",
       },
     },
   ];

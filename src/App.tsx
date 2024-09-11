@@ -23,6 +23,13 @@ const NotFoundPage = () => (
   </div>
 );
 
+function clearLocalStorage(): void {
+  localStorage.removeItem("name");
+  localStorage.removeItem("token");
+  localStorage.removeItem("email");
+  localStorage.removeItem("uploadRecords");
+}
+
 const router = createBrowserRouter([
   {
     id: "root",
@@ -72,8 +79,7 @@ const router = createBrowserRouter([
       {
         path: "logout",
         async loader() {
-          localStorage.removeItem("name");
-          localStorage.removeItem("token");
+          clearLocalStorage();
           return redirect("/");
         },
       },

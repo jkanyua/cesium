@@ -29,6 +29,12 @@ const signupSchema = z
     path: ["confirmPassword"], // This applies to confirmPassword field
   });
 
+class PasswordError extends Error {
+  constructor(message?: string) {
+    super(message);
+  }
+}
+
 export async function loginAction({ request }: LoaderFunctionArgs) {
   const formData = await request.formData();
   const creds = {
@@ -40,10 +46,21 @@ export async function loginAction({ request }: LoaderFunctionArgs) {
   try {
     loginSchema.parse(creds);
     const response = await api.post<{
-      user: { token: string; firstName: string };
+      user: { password: string; firstName: string; email: string };
     }>("/login", creds);
-    localStorage.setItem("token", response.data.user.token);
-    localStorage.setItem("name", response.data.user.firstName);
+    if (
+      response.data.user.password === localStorage.getItem("password") &&
+      response.data.user.email === localStorage.getItem("email")
+    ) {
+      // remove plain password as its no longer needed
+      localStorage.removeItem("password");
+      // set token used in protectedLoader function
+      localStorage.setItem("token", crypto.randomUUID());
+      // Set name to use in the Navbar
+      localStorage.setItem("name", response.data.user.firstName);
+    } else {
+      throw new PasswordError("Invalid login info");
+    }
   } catch (error) {
     // Check if the error is a ZodError and extract the details
     if (error instanceof z.ZodError) {
@@ -52,9 +69,15 @@ export async function loginAction({ request }: LoaderFunctionArgs) {
       };
     }
 
+    if (error instanceof PasswordError) {
+      return {
+        errors: [{ message: [error.message] }],
+      };
+    }
+
     // Handle other unexpected errors
     return {
-      errors: ["An unexpected error occurred"],
+      errors: [{ message: ["An unexpected error occurred"] }],
     };
   }
 
@@ -69,8 +92,19 @@ export async function signupAction({ request }: LoaderFunctionArgs) {
   // Signup and redirect to the login page if successful.
   try {
     signupSchema.parse(signupFormData);
-    const response = await api.post("/signup", signupFormData);
-    localStorage.setItem("signupData", JSON.stringify(response.data));
+    const response = await api.post<{
+      user: {
+        password: string;
+        email: string;
+        fname: string;
+      };
+    }>("/signup", signupFormData);
+
+    // Yikes! Save the plain text password in localstorage
+    // 🤞🏻😱👀🙏🏾
+    localStorage.setItem("password", response.data.user.password);
+    localStorage.setItem("email", response.data.user.email);
+    localStorage.setItem("name", response.data.user.fname);
     return redirect("/");
   } catch (error) {
     // Check if the error is a ZodError and extract the details

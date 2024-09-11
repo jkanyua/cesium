@@ -143,6 +143,7 @@ export const UploadPage: React.FC = () => {
 
       dispatch({ type: "SET_UPLOAD_SUCCESS", payload: true });
       dispatch({ type: "SET_IS_UPLOADING", payload: false });
+      dispatch({ type: "SET_ERROR", payload: "" });
     } catch (err) {
       if (err instanceof z.ZodError) {
         dispatch({ type: "SET_ERROR", payload: err.errors[0].message });
