@@ -54,9 +54,7 @@ export const Navigation = (): JSX.Element => {
               <button
                 className="px-3 py-2 rounded hover:bg-blue-700"
                 onClick={() => {
-                  localStorage.removeItem("name");
-                  localStorage.removeItem("token");
-                  navigate("/");
+                  navigate("/logout");
                 }}
               >
                 <LogOut className="inline-block mr-2 h-4 w-4" /> LogOut

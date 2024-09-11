@@ -59,12 +59,8 @@ export async function loginAction({ request }: LoaderFunctionArgs) {
       response.data.user.password === localStorage.getItem("password") &&
       response.data.user.email === localStorage.getItem("email")
     ) {
-      // remove plain password as its no longer needed
-      localStorage.removeItem("password");
       // set token used in protectedLoader function
       localStorage.setItem("token", crypto.randomUUID());
-      // Set name to use in the Navbar
-      localStorage.setItem("name", response.data.user.firstName);
     } else {
       throw new PasswordError("Invalid login info");
     }

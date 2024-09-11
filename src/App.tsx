@@ -24,10 +24,7 @@ const NotFoundPage = () => (
 );
 
 function clearLocalStorage(): void {
-  localStorage.removeItem("name");
   localStorage.removeItem("token");
-  localStorage.removeItem("email");
-  localStorage.removeItem("uploadRecords");
 }
 
 const router = createBrowserRouter([
