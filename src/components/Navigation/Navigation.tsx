@@ -22,9 +22,11 @@ export const Navigation = (): JSX.Element => {
     <div className="min-h-screen bg-gray-100 text-gray-900">
       <nav className="flex justify-between items-center p-4 bg-blue-600 text-white">
         <div className="text-xl font-bold">CSV Manager</div>
-        <div className="flex text-xl font-bold gap-1">
-          <CircleUser /> {user}
-        </div>
+        {isLoggedIn && (
+          <div className="flex text-xl font-bold gap-1">
+            <CircleUser /> {user}
+          </div>
+        )}
         <div className="flex space-x-4">
           {isLoggedIn && (
             <>

@@ -1,8 +1,14 @@
 import { AlertCircle } from "lucide-react";
 import { ReactNode, useEffect, useState } from "react";
-import { Form, useActionData, useLocation } from "react-router-dom";
+import {
+  Form,
+  useActionData,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 
 export const Login = () => {
+  const navigate = useNavigate();
   const actionData = useActionData() as
     | { errors: { message: string }[] }
     | undefined;
@@ -79,6 +85,7 @@ export const Login = () => {
           <button
             className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
             type="button"
+            onClick={() => navigate("/signup")}
           >
             Sign Up
           </button>

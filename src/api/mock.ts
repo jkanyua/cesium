@@ -17,10 +17,25 @@ mock.onPost("/login").reply((config) => {
     200, // Status code
     {
       user: {
-        id: 1,
+        id: crypto.randomUUID(),
         firstName: extractNameFromEmail(requestData.email),
         email: requestData.email,
         token: crypto.randomUUID(),
+      },
+    },
+  ];
+});
+
+mock.onPost("/signup").reply((config) => {
+  const requestData = JSON.parse(config.data);
+  return [
+    200, // Status code
+    {
+      user: {
+        id: crypto.randomUUID(),
+        ...requestData,
+        password: "redacted",
+        confirmPassword: "redacted",
       },
     },
   ];
