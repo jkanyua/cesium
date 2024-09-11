@@ -41,4 +41,17 @@ mock.onPost("/signup").reply((config) => {
   ];
 });
 
+mock.onPost("/api/upload").reply((config) => {
+  const requestData = JSON.parse(config.data);
+  return [
+    200, // Status code
+    {
+      user: {
+        id: crypto.randomUUID(),
+        ...requestData,
+      },
+    },
+  ];
+});
+
 export default mock;
