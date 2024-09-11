@@ -56,6 +56,7 @@ export const FileDetailsPage = (): JSX.Element => {
                 <th className="py-2 px-4 border-b">
                   File Name
                   <button
+                    data-testid="fileNameSort"
                     onClick={() => handleSort("fileName")}
                     className="ml-2"
                   >
@@ -118,11 +119,6 @@ export const FileDetailsPage = (): JSX.Element => {
             </tbody>
           </table>
           <div className="mt-4 flex justify-between items-center">
-            <div>
-              Showing {(currentPage - 1) * recordsPerPage + 1} to{" "}
-              {Math.min(currentPage * recordsPerPage, records.length)} of{" "}
-              {records.length} entries
-            </div>
             <div className="flex space-x-2">
               <button
                 onClick={() => setCurrentPage(1)}
@@ -142,6 +138,7 @@ export const FileDetailsPage = (): JSX.Element => {
                 Page {currentPage} of {totalPages}
               </span>
               <button
+                data-testid="nextPage"
                 onClick={() =>
                   setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }

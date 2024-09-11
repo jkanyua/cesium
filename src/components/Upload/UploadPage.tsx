@@ -243,6 +243,7 @@ export const UploadPage: React.FC = () => {
             type="file"
             className="hidden"
             onChange={handleFileChange}
+            data-testid="upload-file"
           />
         </label>
       </div>
